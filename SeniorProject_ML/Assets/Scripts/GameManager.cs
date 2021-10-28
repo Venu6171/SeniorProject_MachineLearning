@@ -41,10 +41,10 @@ public class GameManager : MonoBehaviour
         if (viewPlayerPosition.y < 0)
             DestroyPlayer();
 
-        if (viewPlayerPosition.y >= 0.5)
-            mainCamera.speed = 2.5f;
-        else if (viewPlayerPosition.y <= 0.5f && viewPlayerPosition.y > 0)
-            mainCamera.speed = 1.0f;
+        //if (viewPlayerPosition.y >= 0.5)
+        //    mainCamera.speed = 2.5f;
+        //else if (viewPlayerPosition.y <= 0.5f && viewPlayerPosition.y > 0)
+        //    mainCamera.speed = 1.0f;
     }
 
     public void DestroyPlayer()
