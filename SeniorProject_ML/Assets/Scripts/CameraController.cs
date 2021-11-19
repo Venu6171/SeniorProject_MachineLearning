@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        cameraTransform.y = speed * Time.deltaTime;
+        cameraTransform.z = speed * Time.deltaTime;
         myCamera.transform.position += cameraTransform;
     }
 }

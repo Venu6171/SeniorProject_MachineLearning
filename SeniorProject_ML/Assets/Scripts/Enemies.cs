@@ -9,8 +9,8 @@ public class Enemies : MonoBehaviour
     [SerializeField] private int direction = 0;
 
     // Private
-    private Rigidbody2D rigidBody;
-    private Vector2 velocity;
+    private Rigidbody rigidBody;
+    private Vector3 velocity;
     private CameraController cameraController;
 
     private Renderer[] renderers;
@@ -19,7 +19,7 @@ public class Enemies : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rigidBody = GetComponent<Rigidbody2D>();
+        rigidBody = GetComponent<Rigidbody>();
         cameraController = GameObject.Find("Main Camera").GetComponent<CameraController>();
         renderers = GetComponentsInChildren<Renderer>();
     }

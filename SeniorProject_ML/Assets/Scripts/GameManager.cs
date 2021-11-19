@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     void FixedUpdate()
     {
         viewPlayerPosition = mainCamera.GetComponent<Camera>().WorldToViewportPoint(player.transform.position);
-        if (viewPlayerPosition.y < 0)
+        if (viewPlayerPosition.z < 0)
             DestroyPlayer();
 
         //if (viewPlayerPosition.y >= 0.5)
