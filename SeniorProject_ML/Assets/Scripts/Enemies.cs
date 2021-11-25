@@ -11,23 +11,21 @@ public class Enemies : MonoBehaviour
     // Private
     private Rigidbody rigidBody;
     private Vector3 velocity;
-    private CameraController cameraController;
 
-    private Renderer[] renderers;
-    private bool isWrappingX = false;
+    // Screen Wrapping for 2D
+    /*private CameraController cameraController;
+    private MeshRenderer[] renderers;
+    private bool isWrappingX = false;*/
 
     // Start is called before the first frame update
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
-        cameraController = GameObject.Find("Main Camera").GetComponent<CameraController>();
-        renderers = GetComponentsInChildren<Renderer>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        ScreenWrap();
         switch (direction)
         {
             case -1:
@@ -51,44 +49,51 @@ public class Enemies : MonoBehaviour
         rigidBody.MovePosition(rigidBody.position + velocity * Time.fixedDeltaTime);
     }
 
-    private void ScreenWrap()
+    private void OnTriggerEnter(Collider other)
     {
-        bool isVisible = CheckRenderers;
-
-        if (isVisible)
-        {
-            isWrappingX = false;
-            return;
-        }
-
-        if (isWrappingX)
-        {
-            return;
-        }
-
-        Vector3 viewPosition = cameraController.GetComponent<Camera>().WorldToViewportPoint(transform.position);
-        Vector2 newPosition = rigidBody.position;
-        if (viewPosition.x > 1 || viewPosition.x < 0)
-        {
-            newPosition.x = -newPosition.x;
-            isWrappingX = true;
-        }
-
-        rigidBody.position = newPosition;
+        if (other.gameObject.name == "Collider_L" || other.gameObject.name == "Collider_R")
+            direction = -direction;
     }
 
-    bool CheckRenderers
-    {
-        get
-        {
-            foreach (Renderer renderer in renderers)
-            {
-                if (renderer.isVisible)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
+    // Screen Wrapping for 2D
+    /* private void ScreenWrap()
+     {
+         bool isVisible = CheckRenderers;
+
+         if (isVisible)
+         {
+             isWrappingX = false;
+             return;
+         }
+
+         if (isWrappingX)
+         {
+             return;
+         }
+
+         Vector3 viewPosition = cameraController.GetComponent<Camera>().WorldToViewportPoint(transform.position);
+         Vector3 newPosition = rigidBody.position;
+         if (viewPosition.x > 1 || viewPosition.x < 0)
+         {
+             newPosition.x = -newPosition.x;
+             isWrappingX = true;
+         }
+
+         rigidBody.position = newPosition;
+     }
+
+     bool CheckRenderers
+     {
+         get
+         {
+             foreach (MeshRenderer renderer in renderers)
+             {
+                 if (renderer.isVisible)
+                 {
+                     return true;
+                 }
+             }
+             return false;
+         }
+     }*/
 }
