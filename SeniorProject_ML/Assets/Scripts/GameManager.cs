@@ -24,8 +24,7 @@ public class GameManager : MonoBehaviour
         player = GameObject.Find("Player").GetComponent<Player>();
         for (int i = enemies.Length - 1; i <= 0; --i)
         {
-            Enemies all_enemies = GameObject.FindGameObjectWithTag("Enemies").GetComponent<Enemies>();
-            enemies[i] = all_enemies;
+            enemies[i] = GameObject.Find("Enemies").GetComponentInChildren<Enemies>();
         }
         mainCamera = GameObject.Find("Main Camera").GetComponent<CameraController>();
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
@@ -67,14 +66,5 @@ public class GameManager : MonoBehaviour
     {
         uiManager.DisplayGameFinished();
         Time.timeScale = 0.0f;
-    }
-
-    public void DestroyEnemy()
-    {
-        foreach (Enemies enemy in enemies)
-        {
-            Destroy(enemy);
-            enemy.gameObject.SetActive(false);
-        }
     }
 }
