@@ -709,7 +709,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2070611286196876799, guid: 68445536d75ffc14ab55b099efc23f2a, type: 3}
       propertyPath: direction
-      value: -1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2500246369887195013, guid: 68445536d75ffc14ab55b099efc23f2a, type: 3}
       propertyPath: m_Name
@@ -794,7 +794,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2070611286196876799, guid: 68445536d75ffc14ab55b099efc23f2a, type: 3}
       propertyPath: direction
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 2500246369887195013, guid: 68445536d75ffc14ab55b099efc23f2a, type: 3}
       propertyPath: m_Name
@@ -982,7 +982,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2070611286196876799, guid: 68445536d75ffc14ab55b099efc23f2a, type: 3}
       propertyPath: direction
-      value: -1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2500246369887195013, guid: 68445536d75ffc14ab55b099efc23f2a, type: 3}
       propertyPath: m_Name
@@ -2919,7 +2919,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2070611286196876799, guid: 68445536d75ffc14ab55b099efc23f2a, type: 3}
       propertyPath: direction
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 2500246369887195013, guid: 68445536d75ffc14ab55b099efc23f2a, type: 3}
       propertyPath: m_Name
@@ -3479,7 +3479,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5003064611851456216, guid: 99c62004be90e4248bf2965ef1833a4e, type: 3}
       propertyPath: speed
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5003064611851456216, guid: 99c62004be90e4248bf2965ef1833a4e, type: 3}
       propertyPath: myPlayer
