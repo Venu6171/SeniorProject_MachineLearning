@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameOver;
     [SerializeField] private TextMeshProUGUI gameFinished;
 
+
     public bool playGame = false;
 
     // Start is called before the first frame update
@@ -20,7 +21,6 @@ public class UIManager : MonoBehaviour
 
         gameOver.gameObject.SetActive(false);
         gameFinished.gameObject.SetActive(false);
-
     }
 
     // Update is called once per frame
