@@ -164,9 +164,9 @@ public class Player : MonoBehaviour
     {
         if (other.gameObject.name == "Goal")
         {
-            //gameManager.GameFinished();
-            this.transform.position = spawnLocation;
-            gameManager.generationCount += 1;
+            gameManager.GameFinished();
+            //this.transform.position = spawnLocation;
+            //gameManager.generationCount += 1;
             Debug.Log("You Won!");
         }
 
