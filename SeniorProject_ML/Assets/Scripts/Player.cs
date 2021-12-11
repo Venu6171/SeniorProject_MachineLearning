@@ -129,22 +129,21 @@ public class Player : MonoBehaviour
 
             neuralNetwork.FeedForward(currentInputValues[0]);
             outputValues = neuralNetwork.GetResults();
-
-            if (outputValues[0] > outputValues[1])
-            {
-                MoveUp();
-                Debug.Log("Moving Up");
-            }
-            else
-            {
-                Idle();
-                Debug.Log("Doing Nothing");
-            }
         }
     }
 
     private void FixedUpdate()
     {
+        if (outputValues[0] > outputValues[1])
+        {
+            MoveUp();
+            Debug.Log("Moving Up");
+        }
+        else
+        {
+            Idle();
+            Debug.Log("Doing Nothing");
+        }
         //rigidBody.MovePosition(rigidBody.position + velocity * Time.fixedDeltaTime);
     }
 
