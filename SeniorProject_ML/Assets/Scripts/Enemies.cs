@@ -51,8 +51,18 @@ public class Enemies : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name == "Collider_L" || other.gameObject.name == "Collider_R")
-            direction = -direction;
+        Vector3 newPosition = rigidBody.position;
+        if (other.gameObject.name == "Collider_L" && direction == -1)
+        {
+            newPosition.x = -newPosition.x;
+            rigidBody.position = newPosition;
+        }
+
+        if (other.gameObject.name == "Collider_R" && direction == 1)
+        {
+            newPosition.x = -newPosition.x;
+            rigidBody.position = newPosition;
+        }
     }
 
     // Screen Wrapping for 2D

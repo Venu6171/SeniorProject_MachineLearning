@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public List<AudioClip> soundEffects;
+    public AudioSource sound;
+
     [SerializeField] private float speed = 0.0f;
     [SerializeField] private int iteration = 0;
 
+    private Animator animator;
+    private int isIdleHash;
+    private int isRunningHash;
+    private int isCollidedHash;
     private Rigidbody rigidBody;
     private GameManager gameManager;
-    private Vector3 spawnLocation = new Vector3(0.0f, 2.3f, -105.0f);
-    private Vector3 velocity;
+    private Vector3 spawnLocation;
 
     private ML.NeuralNetwork neuralNetwork;
     private List<List<float>> inputValues;
@@ -23,13 +29,27 @@ public class Player : MonoBehaviour
     private float timer = 0.0f;
     private int saveValueCount = 0;
     private int randomCount = 0;
-    private bool trained = false;
+    private int maxRandomRange = 0;
+    public bool isModelTrained = false;
+    private bool movement = false;
+    private bool isCollided = false;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameManager.GetInstance();
         rigidBody = GetComponent<Rigidbody>();
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        animator = GetComponent<Animator>();
+        sound = GetComponentInChildren<AudioSource>();
+
+        for (int i = 0; i < soundEffects.Count; ++i)
+            soundEffects[i] = soundEffects[i];
+
+        spawnLocation = transform.position;
+
+        isIdleHash = Animator.StringToHash("isIdle");
+        isRunningHash = Animator.StringToHash("isRunning");
+        isCollidedHash = Animator.StringToHash("isCollided");
 
         topology = new List<int>
         {
@@ -60,45 +80,44 @@ public class Player : MonoBehaviour
         };
 
         outputValues = new List<float> { new float(), new float() };
-
-        Train();
+        maxRandomRange = gameManager.ReadInputValues(gameManager.inputValueFileName).Count - 1;
     }
 
-    private void Train()
+    public void Train()
     {
-        for (var i = 0; i < iteration; ++i)
+        StartCoroutine(TrainModel());
+        Debug.Log("Model Trained.");
+        isModelTrained = true;
+    }
+
+    IEnumerator TrainModel()
+    {
+        for (int i = 0; i < iteration; ++i)
         {
-            randomCount = Random.Range(0, gameManager.ReadInputValues(gameManager.inputValueFileName).Count - 1);
+            randomCount = Random.Range(0, maxRandomRange);
             neuralNetwork.FeedForward(inputValues[randomCount]);
             outputValues = neuralNetwork.GetResults();
             neuralNetwork.BackPropogate(targetValues[randomCount]);
-            Debug.Log("Training Model");
         }
-        trained = true;
+        yield return null;
     }
 
     private void MoveUp()
     {
+        animator.SetBool(isRunningHash, true);
+        animator.SetBool(isIdleHash, false);
         Vector3 upDirection = new Vector3(0.0f, 0.0f, 1.0f);
         rigidBody.position += upDirection * speed * Time.fixedDeltaTime;
     }
 
-    //private float MoveLeft()
-    //{
-    //    return -1.0f;
-    //}
-    //
-    //private float MoveRight()
-    //{
-    //    return 1.0f;
-    //}
-
     private void Idle()
     {
+        animator.SetBool(isIdleHash, true);
+        animator.SetBool(isRunningHash, false);
+        animator.SetBool(isCollidedHash, false);
         Vector3 idle = new Vector3(0.0f, 0.0f, 0.0f);
         rigidBody.position += idle * Time.fixedDeltaTime;
     }
-
 
     // Update is called once per frame
     void Update()
@@ -118,12 +137,19 @@ public class Player : MonoBehaviour
         //    saveValueCount += 1;
         //}
 
-        //Vector3 moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0.0f, Input.GetAxisRaw("Vertical"));
-        //velocity = moveInput.normalized * speed;
+        if (!isModelTrained)
+        {
+            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+            {
+                movement = true;
+            }
+            else
+            {
+                movement = false;
+            }
+        }
 
-        StartCoroutine(Wait());
-
-        if (trained)
+        if (isModelTrained && gameManager.playGame)
         {
             GetPositions();
 
@@ -134,30 +160,27 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (outputValues[0] > outputValues[1])
+        if (isModelTrained && gameManager.playGame && !isCollided)
         {
-            MoveUp();
-            Debug.Log("Moving Up");
+            if (outputValues[0] > outputValues[1])
+            {
+                MoveUp();
+                Debug.Log("Moving Up");
+            }
+            else
+            {
+                Idle();
+                Debug.Log("Idle");
+            }
         }
-        else
-        {
-            Idle();
-            Debug.Log("Doing Nothing");
-        }
-        //rigidBody.MovePosition(rigidBody.position + velocity * Time.fixedDeltaTime);
-    }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        //if (collision.gameObject.CompareTag("Enemies"))
-        //{
-        //    //Instantiate(this, spawnLocation, Quaternion.identity);
-        //    //Destroy(this);
-        //    //this.gameObject.SetActive(false);
-        //    this.transform.position = spawnLocation;
-        //    gameManager.generationCount += 1;
-        //    Debug.Log("Player Destroyed");
-        //}
+        if (!isModelTrained && !isCollided)
+        {
+            if (movement)
+                MoveUp();
+            else
+                Idle();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -165,21 +188,35 @@ public class Player : MonoBehaviour
         if (other.gameObject.name == "Goal")
         {
             gameManager.GameFinished();
-            //this.transform.position = spawnLocation;
-            //gameManager.generationCount += 1;
             Debug.Log("You Won!");
         }
 
-        if (other.gameObject.name == "Cube_L" ||
-            other.gameObject.name == "Cube_R" || other.gameObject.CompareTag("Enemies"))
+        if (other.gameObject.CompareTag("Enemies") && !isCollided)
         {
-            //Instantiate(this, spawnLocation, Quaternion.identity);
-            //Destroy(this);
-            //this.gameObject.SetActive(false);
-            this.transform.position = spawnLocation;
-            gameManager.generationCount += 1;
+            isCollided = true;
+            sound.PlayOneShot(soundEffects[0]);
+
+            if (animator.GetBool(isRunningHash))
+            {
+                animator.SetBool(isCollidedHash, true);
+            }
+
+            if (animator.GetBool(isIdleHash))
+            {
+                animator.SetBool(isCollidedHash, true);
+            }
+            Invoke("Respawn", 2.0f);
+
             Debug.Log("Player Destroyed");
         }
+    }
+
+    private void Respawn()
+    {
+        isCollided = false;
+        animator.SetBool(isCollidedHash, false);
+        this.transform.position = spawnLocation;
+        gameManager.generationCount += 1;
     }
 
     private void GetPositions()
@@ -199,10 +236,5 @@ public class Player : MonoBehaviour
             currentInputValues[0][7] = gameManager.enemiesRigidBody[3].position.x;
             currentInputValues[0][8] = gameManager.enemiesRigidBody[3].velocity.x;
         }
-    }
-
-    private IEnumerator Wait()
-    {
-        yield return new WaitForSeconds(5.0f);
     }
 }

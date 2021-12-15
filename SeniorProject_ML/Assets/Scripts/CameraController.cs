@@ -5,25 +5,15 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [SerializeField] public float speed = 0.0f;
-
-    private Camera myCamera;
-    private Vector3 cameraTransform;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        myCamera = gameObject.GetComponent<Camera>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public Transform playerTransform;
+    public Vector3 offset;
 
     private void FixedUpdate()
     {
-        cameraTransform.z = speed * Time.deltaTime;
-        myCamera.transform.position += cameraTransform;
+        Vector3 desiredPosition = playerTransform.transform.position + offset;
+        Vector3 smoothPosition = Vector3.Lerp(transform.position, desiredPosition, speed);
+        transform.position = smoothPosition;
+
+        transform.LookAt(playerTransform.transform);
     }
 }
