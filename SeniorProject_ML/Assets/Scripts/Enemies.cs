@@ -12,11 +12,6 @@ public class Enemies : MonoBehaviour
     private Rigidbody rigidBody;
     private Vector3 velocity;
 
-    // Screen Wrapping for 2D
-    /*private CameraController cameraController;
-    private MeshRenderer[] renderers;
-    private bool isWrappingX = false;*/
-
     // Start is called before the first frame update
     void Start()
     {
@@ -64,46 +59,4 @@ public class Enemies : MonoBehaviour
             rigidBody.position = newPosition;
         }
     }
-
-    // Screen Wrapping for 2D
-    /* private void ScreenWrap()
-     {
-         bool isVisible = CheckRenderers;
-
-         if (isVisible)
-         {
-             isWrappingX = false;
-             return;
-         }
-
-         if (isWrappingX)
-         {
-             return;
-         }
-
-         Vector3 viewPosition = cameraController.GetComponent<Camera>().WorldToViewportPoint(transform.position);
-         Vector3 newPosition = rigidBody.position;
-         if (viewPosition.x > 1 || viewPosition.x < 0)
-         {
-             newPosition.x = -newPosition.x;
-             isWrappingX = true;
-         }
-
-         rigidBody.position = newPosition;
-     }
-
-     bool CheckRenderers
-     {
-         get
-         {
-             foreach (MeshRenderer renderer in renderers)
-             {
-                 if (renderer.isVisible)
-                 {
-                     return true;
-                 }
-             }
-             return false;
-         }
-     }*/
 }

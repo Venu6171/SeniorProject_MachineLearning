@@ -113,14 +113,7 @@ public class GameManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        // viewPlayerPosition = mainCamera.GetComponent<Camera>().WorldToViewportPoint(player.transform.position);
-        // if (viewPlayerPosition.z < 0.0f)
-        //     DestroyPlayer();
 
-        //if (viewPlayerPosition.y >= 0.5)
-        //    mainCamera.speed = 2.5f;
-        //else if (viewPlayerPosition.y <= 0.5f && viewPlayerPosition.y > 0)
-        //    mainCamera.speed = 1.0f;
     }
 
     public void ResetValues()

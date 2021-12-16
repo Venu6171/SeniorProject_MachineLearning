@@ -34,6 +34,7 @@ public class Player : MonoBehaviour
     private bool movement = false;
     private bool isCollided = false;
     private bool isModelPlaying = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -122,18 +123,18 @@ public class Player : MonoBehaviour
     {
         timer += Time.deltaTime;
 
-        /*if (timer > 0.5f)
-        {
-            timer = 0.0f;
-            gameManager.SaveInputValues(saveValueCount);
+        //if (timer > 0.5f)
+        //{
+        //    timer = 0.0f;
+        //    gameManager.SaveInputValues(saveValueCount);
 
-            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
-                gameManager.SaveTargetValues(1.0f, 0.0f, saveValueCount);
-            else
-                gameManager.SaveTargetValues(0.0f, 1.0f, saveValueCount);
+        //    if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+        //        gameManager.SaveTargetValues(1.0f, 0.0f, saveValueCount);
+        //    else
+        //        gameManager.SaveTargetValues(0.0f, 1.0f, saveValueCount);
 
-            saveValueCount += 1;
-        }*/
+        //    saveValueCount += 1;
+        //}
 
         if (!isModelTrained && gameManager.playGame)
         {
@@ -187,6 +188,7 @@ public class Player : MonoBehaviour
         if (other.gameObject.name == "Goal")
         {
             gameManager.GameFinished();
+            //this.transform.position = spawnLocation;
             Debug.Log("You Won!");
         }
 
@@ -204,7 +206,7 @@ public class Player : MonoBehaviour
             {
                 animator.SetBool(isCollidedHash, true);
             }
-            Invoke("Respawn", 2.0f);
+            Invoke("Respawn", 3.0f);
 
             Debug.Log("Player Destroyed");
         }
