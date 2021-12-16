@@ -83,8 +83,8 @@ public class GameManager : MonoBehaviour
         fpsText.gameObject.SetActive(true);
         generationCountText.gameObject.SetActive(true);
 
-        inputString = new List<List<string>>(maxSaveCount);
-        targetString = new List<List<string>>(maxSaveCount);
+        inputString = new List<List<string>>();
+        targetString = new List<List<string>>();
 
     }
 

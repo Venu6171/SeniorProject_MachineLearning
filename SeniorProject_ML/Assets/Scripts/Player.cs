@@ -120,37 +120,38 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //timer += Time.deltaTime;
+        timer += Time.deltaTime;
 
-        //if (timer > 0.5f && saveValueCount < gameManager.maxSaveCount)
-        //{
-        //    timer = 0.0f;
-        //    gameManager.SaveInputValues(saveValueCount);
+        /*if (timer > 0.5f)
+        {
+            timer = 0.0f;
+            gameManager.SaveInputValues(saveValueCount);
 
-        //    if (Input.GetKey(KeyCode.UpArrow))
-        //        gameManager.SaveTargetValues(1.0f, 0.0f, saveValueCount);
-        //    else
-        //        gameManager.SaveTargetValues(0.0f, 1.0f, saveValueCount);
+            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+                gameManager.SaveTargetValues(1.0f, 0.0f, saveValueCount);
+            else
+                gameManager.SaveTargetValues(0.0f, 1.0f, saveValueCount);
 
-        //    saveValueCount += 1;
-        //}
+            saveValueCount += 1;
+        }*/
 
         if (!isModelTrained && gameManager.playGame)
         {
+            isModelPlaying = false;
             if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
-            {
                 movement = true;
-            }
             else
-            {
                 movement = false;
-            }
         }
 
         if (isModelTrained && gameManager.playGame)
         {
-            GetPositions();
             isModelPlaying = true;
+            if (timer > 0.5f)
+            {
+                timer = 0.0f;
+                GetPositions();
+            }
             neuralNetwork.FeedForward(currentInputValues[0]);
             outputValues = neuralNetwork.GetResults();
         }
@@ -172,7 +173,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (!isCollided)
+        if (!isModelPlaying && !isCollided)
         {
             if (movement)
                 MoveUp();
@@ -219,20 +220,14 @@ public class Player : MonoBehaviour
 
     private void GetPositions()
     {
-        timer += Time.deltaTime;
-
-        if (timer > 0.5f)
-        {
-            timer = 0.0f;
-            currentInputValues[0][0] = 0.0f;
-            currentInputValues[0][1] = gameManager.enemiesRigidBody[0].position.x;
-            currentInputValues[0][2] = gameManager.enemiesRigidBody[0].velocity.x;
-            currentInputValues[0][3] = gameManager.enemiesRigidBody[1].position.x;
-            currentInputValues[0][4] = gameManager.enemiesRigidBody[1].velocity.x;
-            currentInputValues[0][5] = gameManager.enemiesRigidBody[2].position.x;
-            currentInputValues[0][6] = gameManager.enemiesRigidBody[2].velocity.x;
-            currentInputValues[0][7] = gameManager.enemiesRigidBody[3].position.x;
-            currentInputValues[0][8] = gameManager.enemiesRigidBody[3].velocity.x;
-        }
+        currentInputValues[0][0] = rigidBody.position.x;
+        currentInputValues[0][1] = gameManager.enemiesRigidBody[0].position.x;
+        currentInputValues[0][2] = gameManager.enemiesRigidBody[0].velocity.x;
+        currentInputValues[0][3] = gameManager.enemiesRigidBody[1].position.x;
+        currentInputValues[0][4] = gameManager.enemiesRigidBody[1].velocity.x;
+        currentInputValues[0][5] = gameManager.enemiesRigidBody[2].position.x;
+        currentInputValues[0][6] = gameManager.enemiesRigidBody[2].velocity.x;
+        currentInputValues[0][7] = gameManager.enemiesRigidBody[3].position.x;
+        currentInputValues[0][8] = gameManager.enemiesRigidBody[3].velocity.x;
     }
 }
