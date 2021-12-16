@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     public AudioSource sound;
 
     [SerializeField] private float speed = 0.0f;
-    [SerializeField] private int iteration = 0;
+    public int iteration = 0;
 
     private Animator animator;
     private int isIdleHash;
@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
     public bool isModelTrained = false;
     private bool movement = false;
     private bool isCollided = false;
-
+    private bool isModelPlaying = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -41,9 +41,6 @@ public class Player : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         sound = GetComponentInChildren<AudioSource>();
-
-        for (int i = 0; i < soundEffects.Count; ++i)
-            soundEffects[i] = soundEffects[i];
 
         spawnLocation = transform.position;
 
@@ -106,6 +103,7 @@ public class Player : MonoBehaviour
     {
         animator.SetBool(isRunningHash, true);
         animator.SetBool(isIdleHash, false);
+
         Vector3 upDirection = new Vector3(0.0f, 0.0f, 1.0f);
         rigidBody.position += upDirection * speed * Time.fixedDeltaTime;
     }
@@ -114,7 +112,7 @@ public class Player : MonoBehaviour
     {
         animator.SetBool(isIdleHash, true);
         animator.SetBool(isRunningHash, false);
-        animator.SetBool(isCollidedHash, false);
+
         Vector3 idle = new Vector3(0.0f, 0.0f, 0.0f);
         rigidBody.position += idle * Time.fixedDeltaTime;
     }
@@ -137,7 +135,7 @@ public class Player : MonoBehaviour
         //    saveValueCount += 1;
         //}
 
-        if (!isModelTrained)
+        if (!isModelTrained && gameManager.playGame)
         {
             if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
             {
@@ -152,7 +150,7 @@ public class Player : MonoBehaviour
         if (isModelTrained && gameManager.playGame)
         {
             GetPositions();
-
+            isModelPlaying = true;
             neuralNetwork.FeedForward(currentInputValues[0]);
             outputValues = neuralNetwork.GetResults();
         }
@@ -160,7 +158,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isModelTrained && gameManager.playGame && !isCollided)
+        if (isModelPlaying && !isCollided)
         {
             if (outputValues[0] > outputValues[1])
             {
@@ -174,7 +172,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (!isModelTrained && !isCollided)
+        if (!isCollided)
         {
             if (movement)
                 MoveUp();

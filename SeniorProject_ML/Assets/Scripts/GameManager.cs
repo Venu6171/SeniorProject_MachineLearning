@@ -106,6 +106,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P))
         {
             trafficNoise.Pause();
+            playGame = false;
             uiManager.PauseGame();
         }
     }
@@ -133,6 +134,7 @@ public class GameManager : MonoBehaviour
 
         fpsText.gameObject.SetActive(false);
         generationCountText.gameObject.SetActive(false);
+        trafficNoise.Stop();
         player.isModelTrained = false;
     }
 
@@ -148,6 +150,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0.0f;
         uiManager.DisplayGameFinished();
         playGame = false;
+        trafficNoise.Stop();
     }
 
     public void SaveInputValues(int i)

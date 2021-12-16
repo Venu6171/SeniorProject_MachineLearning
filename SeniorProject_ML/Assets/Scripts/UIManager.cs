@@ -2,24 +2,34 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private Button playButton;
+    [SerializeField] private Button playerInput;
+    [SerializeField] private Button readyButton;
+    [SerializeField] private Button machineLearning;
     [SerializeField] private Button trainButton;
     [SerializeField] private Button quitButton;
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button backToMenuButton;
 
+    [SerializeField] private ToggleGroup toggleGroup;
+
     [SerializeField] private Image gameIcon;
     [SerializeField] private Image pauseBlur;
+    [SerializeField] private Image toggleBlur;
+
 
     [SerializeField] private TextMeshProUGUI gameOver;
     [SerializeField] private TextMeshProUGUI gameFinished;
     [SerializeField] private TextMeshProUGUI gamePause;
+    [SerializeField] private TextMeshProUGUI intelligenceText;
+    [SerializeField] private TextMeshProUGUI gameTypeText;
+    [SerializeField] private TextMeshProUGUI modelTrainedText;
 
     private AudioSource buttonClick;
-
     private GameManager gameManager;
 
     // Start is called before the first frame update
@@ -28,19 +38,41 @@ public class UIManager : MonoBehaviour
         gameManager = GameManager.GetInstance();
 
         buttonClick = GetComponent<AudioSource>();
+        toggleGroup = GameObject.Find("ToggleGroup").GetComponent<ToggleGroup>();
 
         gameOver = GameObject.Find("GameOver").GetComponent<TextMeshProUGUI>();
         gameFinished = GameObject.Find("Win_Text").GetComponent<TextMeshProUGUI>();
         gamePause = GameObject.Find("PauseText").GetComponent<TextMeshProUGUI>();
+        intelligenceText = GameObject.Find("IntelligenceText").GetComponent<TextMeshProUGUI>();
+        gameTypeText = GameObject.Find("GameTypeText").GetComponent<TextMeshProUGUI>();
+        modelTrainedText = GameObject.Find("ModelTrainedText").GetComponent<TextMeshProUGUI>();
 
+        StartCoroutine(SetValues());
+    }
+
+    IEnumerator SetValues()
+    {
         gameOver.gameObject.SetActive(false);
         gameFinished.gameObject.SetActive(false);
         gamePause.gameObject.SetActive(false);
+        intelligenceText.gameObject.SetActive(false);
+        gameTypeText.gameObject.SetActive(false);
+        modelTrainedText.gameObject.SetActive(false);
+
+        readyButton.gameObject.SetActive(false);
+        playerInput.gameObject.SetActive(false);
+        machineLearning.gameObject.SetActive(false);
+        trainButton.gameObject.SetActive(false);
 
         resumeButton.gameObject.SetActive(false);
         backToMenuButton.gameObject.SetActive(false);
         gamePause.gameObject.SetActive(false);
+
         pauseBlur.gameObject.SetActive(false);
+        toggleBlur.gameObject.SetActive(false);
+
+        toggleGroup.gameObject.SetActive(false);
+        yield return null;
     }
 
     public void PlaySound()
@@ -53,13 +85,20 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 1.0f;
         gameManager.fpsText.gameObject.SetActive(true);
         gameManager.generationCountText.gameObject.SetActive(true);
-        playButton.gameObject.SetActive(false);
+        intelligenceText.gameObject.SetActive(false);
+        gameTypeText.gameObject.SetActive(false);
+
+        toggleGroup.gameObject.SetActive(false);
+
+        playerInput.gameObject.SetActive(false);
+        machineLearning.gameObject.SetActive(false);
         trainButton.gameObject.SetActive(false);
-        quitButton.gameObject.SetActive(false);
+        readyButton.gameObject.SetActive(false);
+        modelTrainedText.gameObject.SetActive(false);
+        toggleBlur.gameObject.SetActive(false);
+
         gameIcon.gameObject.SetActive(false);
         Debug.Log("Input Detected");
-        gameManager.playGame = true;
-
     }
 
     public void PauseGame()
@@ -73,16 +112,86 @@ public class UIManager : MonoBehaviour
 
     public void ResumeGame()
     {
-        if (gameManager.playGame)
-        {
-            Time.timeScale = 1.0f;
-            gameManager.playGame = true;
-            pauseBlur.gameObject.SetActive(false);
-            resumeButton.gameObject.SetActive(false);
-            backToMenuButton.gameObject.SetActive(false);
-            gamePause.gameObject.SetActive(false);
-        }
+        Time.timeScale = 1.0f;
+        gameManager.playGame = true;
+        pauseBlur.gameObject.SetActive(false);
+        resumeButton.gameObject.SetActive(false);
+        backToMenuButton.gameObject.SetActive(false);
+        gamePause.gameObject.SetActive(false);
 
+        gameManager.playGame = true;
+
+    }
+
+    public void ToggleNaive()
+    {
+        gameManager.player.iteration = 500;
+        trainButton.gameObject.SetActive(true);
+        modelTrainedText.gameObject.SetActive(false);
+    }
+
+    public void ToggleSmart()
+    {
+        gameManager.player.iteration = 5000;
+        trainButton.gameObject.SetActive(true);
+        modelTrainedText.gameObject.SetActive(false);
+    }
+    public void ToggleHuman()
+    {
+        gameManager.player.iteration = 10000;
+        trainButton.gameObject.SetActive(true);
+        modelTrainedText.gameObject.SetActive(false);
+    }
+
+    public void DisplayGameType()
+    {
+        playButton.gameObject.SetActive(false);
+        quitButton.gameObject.SetActive(false);
+
+        playerInput.gameObject.SetActive(true);
+        machineLearning.gameObject.SetActive(true);
+        gameTypeText.gameObject.SetActive(true);
+    }
+
+    public void PlayerInput()
+    {
+        readyButton.gameObject.SetActive(true);
+
+        gameManager.player.isModelTrained = false;
+
+        intelligenceText.gameObject.SetActive(false);
+        trainButton.gameObject.SetActive(false);
+        toggleGroup.gameObject.SetActive(false);
+        toggleBlur.gameObject.SetActive(false);
+
+        toggleGroup.SetAllTogglesOff();
+    }
+
+    public void MachineLearning()
+    {
+        intelligenceText.gameObject.SetActive(true);
+        toggleGroup.gameObject.SetActive(true);
+        toggleBlur.gameObject.SetActive(true);
+        readyButton.gameObject.SetActive(false);
+    }
+    public void TrainModel()
+    {
+        GameManager.GetInstance().player.Train();
+        trainButton.interactable = false;
+        StartCoroutine(ReadyToGo());
+    }
+
+    IEnumerator ReadyToGo()
+    {
+        yield return new WaitForSecondsRealtime(3.0f);
+        readyButton.gameObject.SetActive(true);
+        modelTrainedText.gameObject.SetActive(true);
+        trainButton.interactable = true;
+    }
+
+    public void Ready()
+    {
+        gameManager.playGame = true;
     }
 
     public void BackToMenu()
@@ -90,7 +199,6 @@ public class UIManager : MonoBehaviour
         gameManager.playGame = false;
         gameManager.ResetValues();
         playButton.gameObject.SetActive(true);
-        trainButton.gameObject.SetActive(true);
         quitButton.gameObject.SetActive(true);
         gameIcon.gameObject.SetActive(true);
         resumeButton.gameObject.SetActive(false);
@@ -108,11 +216,6 @@ public class UIManager : MonoBehaviour
     public void DisplayGameFinished()
     {
         gameFinished.gameObject.SetActive(true);
-    }
-
-    public void TrainModel()
-    {
-        GameManager.GetInstance().player.Train();
     }
 
     public void QuitGame()
