@@ -29,15 +29,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameTypeText;
     [SerializeField] private TextMeshProUGUI modelTrainedText;
 
-    private AudioSource buttonClick;
+    public AudioSource audioSource;
+    public List<AudioClip> soundEffects;
     private GameManager gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameManager.GetInstance();
-
-        buttonClick = GetComponent<AudioSource>();
+        audioSource = GetComponentInChildren<AudioSource>();
         toggleGroup = GameObject.Find("ToggleGroup").GetComponent<ToggleGroup>();
 
         gameOver = GameObject.Find("GameOver").GetComponent<TextMeshProUGUI>();
@@ -75,9 +75,14 @@ public class UIManager : MonoBehaviour
         yield return null;
     }
 
-    public void PlaySound()
+    public void PlayButtonClick()
     {
-        buttonClick.Play();
+        audioSource.PlayOneShot(soundEffects[0], 0.8f);
+    }
+
+    public void PlayToggleSelect()
+    {
+        audioSource.PlayOneShot(soundEffects[1], 0.2f);
     }
 
     public void HideUI()
@@ -128,6 +133,7 @@ public class UIManager : MonoBehaviour
         gameManager.player.iteration = 500;
         trainButton.gameObject.SetActive(true);
         modelTrainedText.gameObject.SetActive(false);
+        readyButton.gameObject.SetActive(false);
     }
 
     public void ToggleSmart()
@@ -135,12 +141,14 @@ public class UIManager : MonoBehaviour
         gameManager.player.iteration = 5000;
         trainButton.gameObject.SetActive(true);
         modelTrainedText.gameObject.SetActive(false);
+        readyButton.gameObject.SetActive(false);
     }
     public void ToggleHuman()
     {
         gameManager.player.iteration = 10000;
         trainButton.gameObject.SetActive(true);
         modelTrainedText.gameObject.SetActive(false);
+        readyButton.gameObject.SetActive(false);
     }
 
     public void DisplayGameType()
@@ -164,7 +172,7 @@ public class UIManager : MonoBehaviour
         toggleGroup.gameObject.SetActive(false);
         toggleBlur.gameObject.SetActive(false);
 
-        toggleGroup.SetAllTogglesOff();
+        toggleGroup.SetAllTogglesOff(true);
     }
 
     public void MachineLearning()

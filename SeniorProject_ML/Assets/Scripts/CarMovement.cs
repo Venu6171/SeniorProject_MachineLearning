@@ -16,7 +16,7 @@ public class CarMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        for (int i = 0; i < wheelTransform.Count; ++i)
-            wheelTransform[i].Rotate(rpm / 60.0f * 360.0f * Time.fixedDeltaTime, 0.0f, 0.0f);
+        foreach (var wheels in wheelTransform)
+            wheels.Rotate(rpm / 60.0f * 360.0f * Time.fixedDeltaTime, 0.0f, 0.0f);
     }
 }

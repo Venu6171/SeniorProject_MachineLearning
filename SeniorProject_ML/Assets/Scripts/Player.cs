@@ -188,7 +188,6 @@ public class Player : MonoBehaviour
         if (other.gameObject.name == "Goal")
         {
             gameManager.GameFinished();
-            //this.transform.position = spawnLocation;
             Debug.Log("You Won!");
         }
 
