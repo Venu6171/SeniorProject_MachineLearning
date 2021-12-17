@@ -33,6 +33,11 @@ public class UIManager : MonoBehaviour
     public List<AudioClip> soundEffects;
     private GameManager gameManager;
 
+    private void Awake()
+    {
+        audioSource.PlayOneShot(soundEffects[2]);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -101,6 +106,8 @@ public class UIManager : MonoBehaviour
         toggleBlur.gameObject.SetActive(false);
         pauseBlur.gameObject.SetActive(false);
         gameIcon.gameObject.SetActive(false);
+
+        audioSource.Stop();
 
         Debug.Log("Input Detected");
     }
@@ -206,6 +213,7 @@ public class UIManager : MonoBehaviour
         gamePause.gameObject.SetActive(false);
         pauseBlur.gameObject.SetActive(false);
         gameFinished.gameObject.SetActive(false);
+        audioSource.PlayOneShot(soundEffects[2]);
     }
 
     public void DisplayGameOver()
@@ -227,6 +235,7 @@ public class UIManager : MonoBehaviour
         gameIcon.gameObject.SetActive(true);
         gameFinished.gameObject.SetActive(false);
         gameManager.ResetValues();
+        audioSource.PlayOneShot(soundEffects[2]);
     }
 
     public void QuitGame()
