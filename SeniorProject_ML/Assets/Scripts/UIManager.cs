@@ -46,7 +46,6 @@ public class UIManager : MonoBehaviour
         intelligenceText = GameObject.Find("IntelligenceText").GetComponent<TextMeshProUGUI>();
         gameTypeText = GameObject.Find("GameTypeText").GetComponent<TextMeshProUGUI>();
         modelTrainedText = GameObject.Find("ModelTrainedText").GetComponent<TextMeshProUGUI>();
-
         StartCoroutine(SetValues());
     }
 
@@ -84,25 +83,25 @@ public class UIManager : MonoBehaviour
     {
         audioSource.PlayOneShot(soundEffects[1], 0.2f);
     }
-
-    public void HideUI()
+    public void Ready()
     {
+        gameManager.playGame = true;
         Time.timeScale = 1.0f;
         gameManager.fpsText.gameObject.SetActive(true);
         gameManager.generationCountText.gameObject.SetActive(true);
+
         intelligenceText.gameObject.SetActive(false);
         gameTypeText.gameObject.SetActive(false);
-
         toggleGroup.gameObject.SetActive(false);
-
         playerInput.gameObject.SetActive(false);
         machineLearning.gameObject.SetActive(false);
         trainButton.gameObject.SetActive(false);
         readyButton.gameObject.SetActive(false);
         modelTrainedText.gameObject.SetActive(false);
         toggleBlur.gameObject.SetActive(false);
-
+        pauseBlur.gameObject.SetActive(false);
         gameIcon.gameObject.SetActive(false);
+
         Debug.Log("Input Detected");
     }
 
@@ -155,6 +154,7 @@ public class UIManager : MonoBehaviour
     {
         playButton.gameObject.SetActive(false);
         quitButton.gameObject.SetActive(false);
+        pauseBlur.gameObject.SetActive(true);
 
         playerInput.gameObject.SetActive(true);
         machineLearning.gameObject.SetActive(true);
@@ -164,15 +164,13 @@ public class UIManager : MonoBehaviour
     public void PlayerInput()
     {
         readyButton.gameObject.SetActive(true);
+        toggleGroup.SetAllTogglesOff(true);
 
         gameManager.player.isModelTrained = false;
-
         intelligenceText.gameObject.SetActive(false);
         trainButton.gameObject.SetActive(false);
         toggleGroup.gameObject.SetActive(false);
         toggleBlur.gameObject.SetActive(false);
-
-        toggleGroup.SetAllTogglesOff(true);
     }
 
     public void MachineLearning()
@@ -197,14 +195,8 @@ public class UIManager : MonoBehaviour
         trainButton.interactable = true;
     }
 
-    public void Ready()
-    {
-        gameManager.playGame = true;
-    }
-
     public void BackToMenu()
     {
-        gameManager.playGame = false;
         gameManager.ResetValues();
         playButton.gameObject.SetActive(true);
         quitButton.gameObject.SetActive(true);

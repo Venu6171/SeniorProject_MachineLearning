@@ -101,13 +101,13 @@ public class GameManager : MonoBehaviour
 
             if (player.isModelTrained)
                 generationCountText.text = "Generation: " + generationCount.ToString();
-        }
 
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            trafficNoise.Pause();
-            playGame = false;
-            uiManager.PauseGame();
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                trafficNoise.Pause();
+                playGame = false;
+                uiManager.PauseGame();
+            }
         }
     }
 
@@ -124,7 +124,7 @@ public class GameManager : MonoBehaviour
             enemiesRigidBody[i].position = enemyPositions[i];
 
         generationCount = 0;
-
+        playGame = false;
         fpsText.gameObject.SetActive(false);
         generationCountText.gameObject.SetActive(false);
         trafficNoise.Stop();
