@@ -2993,6 +2993,7 @@ MonoBehaviour:
   soundEffects:
   - {fileID: 8300000, guid: f8db2a1c30df4e34ca18afbbc1386ac7, type: 3}
   - {fileID: 8300000, guid: 4194e592cda793b4b889266ba72144ed, type: 3}
+  - {fileID: 8300000, guid: e7334ee120a13fa409743e9596bbbf57, type: 3}
 --- !u!114 &470519443
 MonoBehaviour:
   m_ObjectHideFlags: 0
