@@ -151,7 +151,7 @@ public class UIManager : MonoBehaviour
     }
     public void ToggleHuman()
     {
-        gameManager.player.iteration = 10000;
+        gameManager.player.iteration = 20000;
         trainButton.gameObject.SetActive(true);
         modelTrainedText.gameObject.SetActive(false);
         readyButton.gameObject.SetActive(false);

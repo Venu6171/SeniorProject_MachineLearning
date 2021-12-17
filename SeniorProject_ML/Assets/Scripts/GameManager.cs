@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
     private Vector3 playerSpawnLocation;
     private Rigidbody playerRigidBody;
     [SerializeField] public Rigidbody[] enemiesRigidBody;
-    [SerializeField] private CameraController mainCamera;
     [SerializeField] public TextMeshProUGUI fpsText;
     [SerializeField] public TextMeshProUGUI generationCountText;
 
@@ -28,7 +27,6 @@ public class GameManager : MonoBehaviour
     private float fps = 0.0f;
     public int generationCount = 0;
     private UIManager uiManager;
-    private Vector3 viewPlayerPosition;
 
     private List<List<string>> inputString;
     private List<List<string>> targetString;
@@ -74,7 +72,6 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < enemiesRigidBody.Length; ++i)
             enemyPositions.Add(enemiesRigidBody[i].position);
 
-        mainCamera = GameObject.Find("Main Camera").GetComponent<CameraController>();
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
 
         fpsText = GameObject.Find("FPS").GetComponent<TextMeshProUGUI>();

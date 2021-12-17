@@ -43,7 +43,7 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
         sound = GetComponentInChildren<AudioSource>();
 
-        spawnLocation = transform.position;
+        spawnLocation = new Vector3(0.0f, 0.0500000007f, -161.830002f);
 
         isIdleHash = Animator.StringToHash("isIdle");
         isRunningHash = Animator.StringToHash("isRunning");
@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
 
         topology = new List<int>
         {
-            9, 6, 2
+            9, 8, 2
         };
 
         neuralNetwork = new ML.NeuralNetwork(topology);
@@ -188,6 +188,7 @@ public class Player : MonoBehaviour
         if (other.gameObject.name == "Goal")
         {
             gameManager.GameFinished();
+            //this.transform.position = spawnLocation;
             Debug.Log("You Won!");
         }
 
@@ -221,7 +222,7 @@ public class Player : MonoBehaviour
 
     private void GetPositions()
     {
-        currentInputValues[0][0] = rigidBody.position.x;
+        currentInputValues[0][0] = this.rigidBody.position.x;
         currentInputValues[0][1] = gameManager.enemiesRigidBody[0].position.x;
         currentInputValues[0][2] = gameManager.enemiesRigidBody[0].velocity.x;
         currentInputValues[0][3] = gameManager.enemiesRigidBody[1].position.x;
