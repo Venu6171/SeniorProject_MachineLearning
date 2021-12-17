@@ -189,7 +189,7 @@ public class UIManager : MonoBehaviour
 
     IEnumerator ReadyToGo()
     {
-        yield return new WaitForSecondsRealtime(3.0f);
+        yield return new WaitForSecondsRealtime(2.0f);
         readyButton.gameObject.SetActive(true);
         modelTrainedText.gameObject.SetActive(true);
         trainButton.interactable = true;
@@ -216,6 +216,17 @@ public class UIManager : MonoBehaviour
     public void DisplayGameFinished()
     {
         gameFinished.gameObject.SetActive(true);
+        StartCoroutine(MenuScreen());
+    }
+
+    IEnumerator MenuScreen()
+    {
+        yield return new WaitForSecondsRealtime(3.0f);
+        playButton.gameObject.SetActive(true);
+        quitButton.gameObject.SetActive(true);
+        gameIcon.gameObject.SetActive(true);
+        gameFinished.gameObject.SetActive(false);
+        gameManager.ResetValues();
     }
 
     public void QuitGame()

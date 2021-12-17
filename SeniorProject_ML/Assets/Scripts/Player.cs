@@ -205,7 +205,7 @@ public class Player : MonoBehaviour
             {
                 animator.SetBool(isCollidedHash, true);
             }
-            Invoke("Respawn", 3.0f);
+            Invoke("Respawn", 3.02f);
 
             Debug.Log("Player Destroyed");
         }

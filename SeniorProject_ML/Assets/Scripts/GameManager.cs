@@ -142,8 +142,6 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0.0f;
         uiManager.DisplayGameFinished();
-        playGame = false;
-        trafficNoise.Stop();
     }
 
     public void SaveInputValues(int i)
