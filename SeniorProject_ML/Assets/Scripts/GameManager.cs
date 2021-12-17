@@ -141,6 +141,7 @@ public class GameManager : MonoBehaviour
     public void GameFinished()
     {
         Time.timeScale = 0.0f;
+        playGame = false;
         uiManager.DisplayGameFinished();
     }
 
