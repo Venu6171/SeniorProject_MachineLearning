@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/CrossyRoad_ML.unity
+    path: Assets/Scenes/Menu.unity
+    guid: ff556c127b9c7c84d9acc3efcff12ae6
+  - enabled: 1
+    path: Assets/Scenes/Level1.unity
     guid: 60e39825c53d8394ebf1f3d23f990286
   m_configObjects: {}
