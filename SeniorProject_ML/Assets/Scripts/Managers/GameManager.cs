@@ -6,28 +6,24 @@ using System.IO;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager instance;
+    private static GameManager Instance;
 
     public static GameManager GetInstance()
     {
-        return instance;
+        return Instance;
     }
 
-    private AudioSource trafficNoise;
+    private PauseMenu pauseMenu;
 
-    [SerializeField] public Player player;
+    private static Player player;
     private Vector3 playerSpawnLocation;
-    private Rigidbody playerRigidBody;
-    [SerializeField] public Rigidbody[] enemiesRigidBody;
-    [SerializeField] public TextMeshProUGUI fpsText;
-    [SerializeField] public TextMeshProUGUI generationCountText;
 
+    private TextMeshProUGUI generationCountText;
+    private TextMeshProUGUI gameOverText;
+    private TextMeshProUGUI gameWonText;
+
+    private static List<Rigidbody> enemiesRigidBody;
     private List<Vector3> enemyPositions;
-
-    private float fps = 0.0f;
-    public int generationCount = 0;
-    private UIManager uiManager;
-
     private List<List<string>> inputString;
     private List<List<string>> targetString;
     private List<string> inputValues;
@@ -35,50 +31,58 @@ public class GameManager : MonoBehaviour
 
     public string inputValueFileName;
     public string targetValueFileName;
-
+    public int generationCount = 0;
     public int maxSaveCount = 0;
-    public bool playGame = false;
 
     private void Awake()
     {
-        Time.timeScale = 0.0f;
+        Time.timeScale = 1.0f;
+        AudioManager.GetInstance().PlaySound(AudioManager.Sound.Traffic);
 
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
-            DontDestroyOnLoad(this.gameObject);
-            Debug.Log("Game Manager Instance created");
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            Debug.Log("Game_Manager Instance created");
         }
         else
         {
-            Destroy(this.gameObject);
-            Debug.Log("Game Manager Destroyed");
+            Destroy(gameObject);
+            Destroy(player);
+            enemiesRigidBody.Clear();
+            Debug.Log("Game_Manager duplicate Destroyed");
         }
+
+        player = GameObject.Find("Alien").GetComponent<Player>();
+
+        enemiesRigidBody = new List<Rigidbody>();
+        enemyPositions = new List<Vector3>();
+        foreach (var enemy in GameObject.FindGameObjectsWithTag("Enemies"))
+        {
+            enemiesRigidBody.Add(enemy.GetComponent<Rigidbody>());
+            enemyPositions.Add(enemy.transform.position);
+        }
+
+        pauseMenu = GameObject.Find("PauseMenu").GetComponent<PauseMenu>();
+        DontDestroyOnLoad(pauseMenu);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.Find("Alien").GetComponent<Player>();
         playerSpawnLocation = player.GetComponent<Transform>().position;
-        playerRigidBody = player.GetComponent<Rigidbody>();
 
-        trafficNoise = GetComponent<AudioSource>();
+        //generationCountText = GameObject.Find("DisplayText").GetComponentInChildren<TextMeshProUGUI>();
+        //gameOverText = GameObject.Find("DisplayText").GetComponentInChildren<TextMeshProUGUI>();
+        //gameWonText = GameObject.Find("DisplayText").GetComponentInChildren<TextMeshProUGUI>();
 
-        for (int i = 0; i < enemiesRigidBody.Length; ++i)
-            enemiesRigidBody[i] = enemiesRigidBody[i].GetComponent<Rigidbody>();
-
-        enemyPositions = new List<Vector3>();
-        for (int i = 0; i < enemiesRigidBody.Length; ++i)
-            enemyPositions.Add(enemiesRigidBody[i].position);
-
-        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
-
-        fpsText = GameObject.Find("FPS").GetComponent<TextMeshProUGUI>();
-        generationCountText = GameObject.Find("GenerationCountText").GetComponent<TextMeshProUGUI>();
-
-        fpsText.gameObject.SetActive(true);
-        generationCountText.gameObject.SetActive(true);
+        //if (player.isModelTrained)
+        //    generationCountText.gameObject.SetActive(true);
+        //else
+        //    generationCountText.gameObject.SetActive(false);
+        //
+        //gameOverText.gameObject.SetActive(false);
+        //gameWonText.gameObject.SetActive(false);
 
         inputString = new List<List<string>>();
         targetString = new List<List<string>>();
@@ -88,24 +92,18 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (playGame)
+        //if (player.isModelTrained)
+        //    generationCountText.text = "Generation: " + generationCount.ToString();
+
+        if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!trafficNoise.isPlaying)
-                trafficNoise.Play();
-
-            fps = 1.0f / Time.deltaTime;
-            fpsText.text = "FPS: " + Mathf.Ceil(fps).ToString() + "fps";
-
-            if (player.isModelTrained)
-                generationCountText.text = "Generation: " + generationCount.ToString();
-
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                trafficNoise.Pause();
-                playGame = false;
-                uiManager.PauseGame();
-            }
+            pauseMenu.PauseGame();
         }
+    }
+
+    public List<Rigidbody> GetEnemies()
+    {
+        return enemiesRigidBody;
     }
 
     void FixedUpdate()
@@ -117,36 +115,42 @@ public class GameManager : MonoBehaviour
     {
         player.transform.position = playerSpawnLocation;
 
-        for (int i = 0; i < enemiesRigidBody.Length; ++i)
+        for (int i = 0; i < enemiesRigidBody.Count; ++i)
             enemiesRigidBody[i].position = enemyPositions[i];
 
         generationCount = 0;
-        playGame = false;
-        fpsText.gameObject.SetActive(false);
         generationCountText.gameObject.SetActive(false);
-        trafficNoise.Stop();
         player.isModelTrained = false;
     }
 
     public void DestroyPlayer()
     {
         player.gameObject.SetActive(false);
-        uiManager.DisplayGameOver();
+        DisplayGameOver();
         Time.timeScale = 0.0f;
     }
 
-    public void GameFinished()
+    public void GameWon()
     {
         Time.timeScale = 0.0f;
-        playGame = false;
-        uiManager.DisplayGameFinished();
+        DisplayGameWon();
+    }
+
+    public void DisplayGameOver()
+    {
+        gameOverText.gameObject.SetActive(true);
+    }
+
+    public void DisplayGameWon()
+    {
+        gameWonText.gameObject.SetActive(true);
     }
 
     public void SaveInputValues(int i)
     {
         inputValues = new List<string> {
-            playerRigidBody.position.x + "," + enemiesRigidBody[0].position.x + "," +
-            +enemiesRigidBody[0].velocity.x + "," + enemiesRigidBody[1].position.x + "," + enemiesRigidBody[1].velocity.x + ","
+            player.GetComponent<Rigidbody>().position.x + "," + enemiesRigidBody[0].position.x + "," +
+            + enemiesRigidBody[0].velocity.x + "," + enemiesRigidBody[1].position.x + "," + enemiesRigidBody[1].velocity.x + ","
             + enemiesRigidBody[2].position.x + "," + enemiesRigidBody[2].velocity.x + "," + enemiesRigidBody[3].position.x + ","
             + enemiesRigidBody[3].velocity.x
         };

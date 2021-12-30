@@ -7,6 +7,7 @@ TagManager:
   - Enemies
   - GameManager
   - Ground
+  - Sound
   layers:
   - Default
   - TransparentFX

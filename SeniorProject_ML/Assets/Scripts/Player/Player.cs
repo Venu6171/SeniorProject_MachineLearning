@@ -4,19 +4,18 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public List<AudioClip> soundEffects;
-    public AudioSource sound;
-
     [SerializeField] private float speed = 0.0f;
-    public int iteration = 0;
+    private int iteration = 0;
 
     private Animator animator;
     private int isIdleHash;
     private int isRunningHash;
     private int isCollidedHash;
     private Rigidbody rigidBody;
-    private GameManager gameManager;
     private Vector3 spawnLocation;
+
+    private GameManager gameManager;
+    private UIManager uiManager;
 
     private ML.NeuralNetwork neuralNetwork;
     private List<List<float>> inputValues;
@@ -39,9 +38,10 @@ public class Player : MonoBehaviour
     void Start()
     {
         gameManager = GameManager.GetInstance();
+        uiManager = UIManager.GetInstance();
+
         rigidBody = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-        sound = GetComponentInChildren<AudioSource>();
 
         spawnLocation = new Vector3(0.0f, 0.0500000007f, -161.830002f);
 
@@ -66,10 +66,10 @@ public class Player : MonoBehaviour
             rigidBody.position.x
         };
 
-        for (int i = 0; i < gameManager.enemiesRigidBody.Length; ++i)
+        for (int i = 0; i < gameManager.GetEnemies().Count; ++i)
         {
-            posX.Add(gameManager.enemiesRigidBody[i].position.x);
-            posX.Add(gameManager.enemiesRigidBody[i].velocity.x);
+            posX.Add(gameManager.GetEnemies()[i].position.x);
+            posX.Add(gameManager.GetEnemies()[i].velocity.x);
         }
 
         currentInputValues = new List<List<float>>()
@@ -79,9 +79,15 @@ public class Player : MonoBehaviour
 
         outputValues = new List<float> { new float(), new float() };
         maxRandomRange = gameManager.ReadInputValues(gameManager.inputValueFileName).Count - 1;
+
+        if (uiManager.GetInputType())
+        {
+            iteration = uiManager.GetModelIteration();
+            Train();
+        }
     }
 
-    public void Train()
+    private void Train()
     {
         StartCoroutine(TrainModel());
         Debug.Log("Model Trained.");
@@ -136,7 +142,7 @@ public class Player : MonoBehaviour
         //    saveValueCount += 1;
         //}
 
-        if (!isModelTrained && gameManager.playGame)
+        if (!isModelTrained)
         {
             isModelPlaying = false;
             if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
@@ -145,7 +151,7 @@ public class Player : MonoBehaviour
                 movement = false;
         }
 
-        if (isModelTrained && gameManager.playGame)
+        if (isModelTrained)
         {
             isModelPlaying = true;
             if (timer > 0.5f)
@@ -187,15 +193,14 @@ public class Player : MonoBehaviour
     {
         if (other.gameObject.name == "Goal")
         {
-            gameManager.GameFinished();
-            //this.transform.position = spawnLocation;
+            gameManager.GameWon();
             Debug.Log("You Won!");
         }
 
         if (other.gameObject.CompareTag("Enemies") && !isCollided)
         {
             isCollided = true;
-            sound.PlayOneShot(soundEffects[0]);
+            AudioManager.GetInstance().PlaySound(AudioManager.Sound.PlayerCollision);
 
             if (animator.GetBool(isRunningHash))
             {
@@ -222,14 +227,14 @@ public class Player : MonoBehaviour
 
     private void GetPositions()
     {
-        currentInputValues[0][0] = this.rigidBody.position.x;
-        currentInputValues[0][1] = gameManager.enemiesRigidBody[0].position.x;
-        currentInputValues[0][2] = gameManager.enemiesRigidBody[0].velocity.x;
-        currentInputValues[0][3] = gameManager.enemiesRigidBody[1].position.x;
-        currentInputValues[0][4] = gameManager.enemiesRigidBody[1].velocity.x;
-        currentInputValues[0][5] = gameManager.enemiesRigidBody[2].position.x;
-        currentInputValues[0][6] = gameManager.enemiesRigidBody[2].velocity.x;
-        currentInputValues[0][7] = gameManager.enemiesRigidBody[3].position.x;
-        currentInputValues[0][8] = gameManager.enemiesRigidBody[3].velocity.x;
+        currentInputValues[0][0] = rigidBody.position.x;
+        currentInputValues[0][1] = gameManager.GetEnemies()[0].position.x;
+        currentInputValues[0][2] = gameManager.GetEnemies()[0].velocity.x;
+        currentInputValues[0][3] = gameManager.GetEnemies()[1].position.x;
+        currentInputValues[0][4] = gameManager.GetEnemies()[1].velocity.x;
+        currentInputValues[0][5] = gameManager.GetEnemies()[2].position.x;
+        currentInputValues[0][6] = gameManager.GetEnemies()[2].velocity.x;
+        currentInputValues[0][7] = gameManager.GetEnemies()[3].position.x;
+        currentInputValues[0][8] = gameManager.GetEnemies()[3].velocity.x;
     }
 }
