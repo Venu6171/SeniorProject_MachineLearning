@@ -1,17 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuContainer;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
 
     public void PauseGame()
     {
@@ -29,8 +21,9 @@ public class PauseMenu : MonoBehaviour
     public void BackToMainMenu()
     {
         pauseMenuContainer.SetActive(false);
+        LevelManager.GetInstance().ReleaseObjects();
+        GameManager.GetInstance().ResetValues();
         AudioManager.GetInstance().StopSound();
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex - 1);
     }
-
 }

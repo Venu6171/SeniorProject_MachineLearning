@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -16,9 +16,17 @@ public class UIManager : MonoBehaviour
         return Instance;
     }
 
-    public IntelligenceType modelIntelligence;
-    public int modelIteration = 0;
+    [System.Serializable]
+    public class ModelIntelligence
+    {
+        public IntelligenceType modelIntelligence;
+        public int modelIteration = 0;
+    }
+
+    public ModelIntelligence[] modelIntelligences;
+
     public bool isModel = false;
+    public int currentIteration = 0;
 
     private void Awake()
     {
@@ -38,33 +46,44 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        modelIntelligence = IntelligenceType.Naive;
-        modelIteration = 0;
+
     }
 
-    public void SetModelIteration()
+    void Update()
     {
-        switch (modelIntelligence)
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByBuildIndex(1))
         {
-            case IntelligenceType.Naive:
-                modelIteration = 500;
-                break;
-            case IntelligenceType.Smart:
-                modelIteration = 5000;
-                break;
-            case IntelligenceType.Human:
-                modelIteration = 10000;
-                break;
+            if (GameManager.player.isModelTrained)
+                GameManager.GetInstance().generationCountText.text = "Generation: " + GameManager.GetInstance().generationCount.ToString();
+        }
+    }
+
+    public void SetModelIteration(int iteration)
+    {
+        foreach (var model in modelIntelligences)
+        {
+            if (model.modelIntelligence == (IntelligenceType)iteration)
+                currentIteration = model.modelIteration;
         }
     }
 
     public int GetModelIteration()
     {
-        return modelIteration;
+        return currentIteration;
     }
 
     public bool GetInputType()
     {
         return isModel;
+    }
+
+    public void DisplayGameOver()
+    {
+        GameManager.GetInstance().gameOverText.gameObject.SetActive(true);
+    }
+
+    public void DisplayGameWon()
+    {
+        GameManager.GetInstance().gameWonText.gameObject.SetActive(true);
     }
 }

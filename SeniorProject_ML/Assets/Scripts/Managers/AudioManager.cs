@@ -29,6 +29,7 @@ public class AudioManager : MonoBehaviour
 
     private GameObject _soundGameObject;
     private AudioSource _audioSource;
+    public bool isPaused = false;
 
     private void Awake()
     {
@@ -63,10 +64,22 @@ public class AudioManager : MonoBehaviour
         return null;
     }
 
+    public bool IsPlaying(Sound sound)
+    {
+        if (_soundGameObject.activeInHierarchy && _soundGameObject.name == "Sound_" + sound)
+        {
+            if (_audioSource.isPlaying)
+                return true;
+        }
+        return false;
+    }
+
     public void PauseSound()
     {
         foreach (var audio in GameObject.FindObjectsOfType<AudioSource>())
             audio.Pause();
+
+        isPaused = true;
     }
 
     public void UnPauseSound()

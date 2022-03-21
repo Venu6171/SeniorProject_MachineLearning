@@ -5,7 +5,6 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float speed = 0.0f;
-    private int iteration = 0;
 
     private Animator animator;
     private int isIdleHash;
@@ -34,12 +33,14 @@ public class Player : MonoBehaviour
     private bool isCollided = false;
     private bool isModelPlaying = false;
 
+    private TrainingData TrainingData;
+
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameManager.GetInstance();
         uiManager = UIManager.GetInstance();
-
+        TrainingData = new TrainingData();
         rigidBody = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
 
@@ -56,10 +57,9 @@ public class Player : MonoBehaviour
 
         neuralNetwork = new ML.NeuralNetwork(topology);
         inputValues = new List<List<float>>();
-        inputValues = gameManager.ReadInputValues(gameManager.inputValueFileName);
-
+        inputValues = TrainingData.ReadInputValues(gameManager.inputValueFileName);
         targetValues = new List<List<float>>();
-        targetValues = gameManager.ReadTargetValues(gameManager.targetValueFileName);
+        targetValues = TrainingData.ReadTargetValues(gameManager.targetValueFileName);
 
         posX = new List<float>
         {
@@ -78,13 +78,10 @@ public class Player : MonoBehaviour
         };
 
         outputValues = new List<float> { new float(), new float() };
-        maxRandomRange = gameManager.ReadInputValues(gameManager.inputValueFileName).Count - 1;
+        maxRandomRange = TrainingData.ReadInputValues(gameManager.inputValueFileName).Count - 1;
 
         if (uiManager.GetInputType())
-        {
-            iteration = uiManager.GetModelIteration();
             Train();
-        }
     }
 
     private void Train()
@@ -96,13 +93,14 @@ public class Player : MonoBehaviour
 
     IEnumerator TrainModel()
     {
-        for (int i = 0; i < iteration; ++i)
+        for (int i = 0; i < uiManager.GetModelIteration(); ++i)
         {
             randomCount = Random.Range(0, maxRandomRange);
             neuralNetwork.FeedForward(inputValues[randomCount]);
             outputValues = neuralNetwork.GetResults();
             neuralNetwork.BackPropogate(targetValues[randomCount]);
         }
+        gameManager.generationCountText.gameObject.SetActive(true);
         yield return null;
     }
 
@@ -132,12 +130,12 @@ public class Player : MonoBehaviour
         //if (timer > 0.5f)
         //{
         //    timer = 0.0f;
-        //    gameManager.SaveInputValues(saveValueCount);
+        //    TrainingData.SaveInputValues(saveValueCount);
 
         //    if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
-        //        gameManager.SaveTargetValues(1.0f, 0.0f, saveValueCount);
+        //        TrainingData.SaveTargetValues(1.0f, 0.0f, saveValueCount);
         //    else
-        //        gameManager.SaveTargetValues(0.0f, 1.0f, saveValueCount);
+        //        TrainingData.SaveTargetValues(0.0f, 1.0f, saveValueCount);
 
         //    saveValueCount += 1;
         //}
@@ -194,6 +192,7 @@ public class Player : MonoBehaviour
         if (other.gameObject.name == "Goal")
         {
             gameManager.GameWon();
+            //LevelManager.GetInstance().SpawnLevel();
             Debug.Log("You Won!");
         }
 

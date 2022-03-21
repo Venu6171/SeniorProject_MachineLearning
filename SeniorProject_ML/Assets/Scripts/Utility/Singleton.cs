@@ -17,6 +17,8 @@ public abstract class StaticInstance<T> : MonoBehaviour where T : MonoBehaviour
         Instance = null;
         Destroy(gameObject);
     }
+
+    
 }
 
 /// <summary>
